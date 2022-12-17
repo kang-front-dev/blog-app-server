@@ -73,11 +73,24 @@ app.patch('/logUser', async (request, response) => {
     result.password
   );
   return isPassValid
-    ? response.status(200).json({ success: true, message: 'Welcome back!' })
+    ? response.status(200).json({ success: true, message: 'Welcome back!',userData: result })
     : response
         .status(401)
         .json({ success: false, message: 'Invalid password.' });
 });
+app.patch('/getUserInfo', async (request, response) => {
+  const query = {
+    name: request.body.name,
+  };
+  const result = await users.findOne(query);
+
+  return result
+    ? response.status(200).json({ success: true ,userData: result })
+    : response
+        .status(404)
+        .json({ success: false, message: 'User not found.' });
+});
+
 
 ////////////////////////USERS///////////////////////
 ////////////////////////REVIEWS///////////////////////
@@ -96,16 +109,17 @@ app.post('/insertReview', async (request, response) => {
     group: request.body.group,
     tags: request.body.tags,
     imgPath: request.body.imgPath,
-    // author: request.body.author,
-    likes: 0,
-    dislikes: 0,
-    views: 0,
+    author: request.body.author,
+    likes: request.body.likes,
+    dislikes: request.body.dislikes,
+    views: request.body.views,
     rating: request.body.rating,
     comments: [],
+    createDate: request.body.createDate
   };
   const result = await reviews.insertOne(query);
   if (result) {
-    return response.status(200).json({ success: true });
+    return response.status(200).json({ success: true,reviewId: result.insertedId });
   }
 });
 
@@ -120,7 +134,6 @@ app.post('/updateViewsReview', async (request, response) => {
     },
   };
   const updateResult = await reviews.updateOne(query, updateQuery);
-  console.log(updateResult,'update result');
   if (updateResult) {
     return response.status(200).json({ success: true });
   }
@@ -143,6 +156,129 @@ app.patch('/editReview', async (request, response) => {
   return result
     ? response.status(200).json({ success: true })
     : response.status(404).json({ success: false, message: 'Unknown error' });
+});
+
+app.patch('/getUserReviews', async (request, response) => {
+  const query = {
+    author: request.body.name,
+  };
+  const result = await reviews.find(query).toArray();
+
+  return result
+    ? response.status(200).json({ success: true ,reviews: result })
+    : response
+        .status(404)
+        .json({ success: false, message: 'Reviews not found.' });
+});
+app.patch('/getReview', async (request, response) => {
+  const query = {
+    _id: new ObjectId(request.body._id),
+  };
+  const result = await reviews.findOne(query);
+  return result
+    ? response.status(200).json({ success: true ,reviewData: result })
+    : response
+        .status(404)
+        .json({ success: false, message: 'Reviews not found.' });
+});
+app.patch('/addLike', async (request, response) => {
+  const query = {
+    _id: new ObjectId(request.body._id),
+  };
+  const result = await reviews.findOne(query);
+  const reviewLikes = result.likes
+  const updateQuery = {
+    $set:{
+      likes: [...reviewLikes,request.body.username]
+    }
+  }
+  const updateResult = await reviews.updateOne(query,updateQuery)
+  console.log(updateResult,'addLike result');
+  return updateResult
+    ? response.status(200).json({ success: true })
+    : response
+        .status(404)
+        .json({ success: false, message: 'Unknown error' });
+});
+app.patch('/removeLike', async (request, response) => {
+  const query = {
+    _id: new ObjectId(request.body._id),
+  };
+  const result = await reviews.findOne(query);
+  const reviewLikes = result.likes
+  const userIndex = reviewLikes.indexOf(request.body.username)
+  reviewLikes.splice(userIndex,1)
+  const updateQuery = {
+    $set:{
+      likes: reviewLikes
+    }
+  }
+  const updateResult = await reviews.updateOne(query,updateQuery)
+  console.log(updateResult,'addLike result');
+  return updateResult
+    ? response.status(200).json({ success: true })
+    : response
+        .status(404)
+        .json({ success: false, message: 'Unknown error' });
+});
+app.patch('/addDislike', async (request, response) => {
+  const query = {
+    _id: new ObjectId(request.body._id),
+  };
+  const result = await reviews.findOne(query);
+  const reviewDislikes = result.dislikes
+  const updateQuery = {
+    $set:{
+      dislikes: [...reviewDislikes,request.body.username]
+    }
+  }
+  const updateResult = await reviews.updateOne(query,updateQuery)
+  console.log(updateResult,'addDislike result');
+  return updateResult
+    ? response.status(200).json({ success: true })
+    : response
+        .status(404)
+        .json({ success: false, message: 'Unknown error' });
+});
+app.patch('/removeDislike', async (request, response) => {
+  const query = {
+    _id: new ObjectId(request.body._id),
+  };
+  const result = await reviews.findOne(query);
+  const reviewDislikes = result.dislikes
+  const userIndex = reviewDislikes.indexOf(request.body.username)
+  reviewDislikes.splice(userIndex,1)
+  const updateQuery = {
+    $set:{
+      dislikes: reviewDislikes
+    }
+  }
+  const updateResult = await reviews.updateOne(query,updateQuery)
+  console.log(updateResult,'addDislike result');
+  return updateResult
+    ? response.status(200).json({ success: true })
+    : response
+        .status(404)
+        .json({ success: false, message: 'Unknown error' });
+});
+app.patch('/addView', async (request, response) => {
+  const query = {
+    _id: new ObjectId(request.body._id),
+  };
+  const result = await reviews.findOne(query);
+  const reviewViews = result.views
+  const updateQuery = {
+    $set:{
+      views: [...reviewViews,request.body.username]
+    }
+  }
+  const updateResult = await reviews.updateOne(query,updateQuery)
+  console.log(updateResult,'addView result');
+  return updateResult
+    ? response.status(200).json({ success: true })
+    : response
+        .status(404)
+        .json({ success: false, message: 'Unknown error' });
 });
 
 ////////////////////////REVIEWS///////////////////////
