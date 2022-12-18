@@ -90,9 +90,21 @@ app.patch('/getUserInfo', async (request, response) => {
         .status(404)
         .json({ success: false, message: 'User not found.' });
 });
+app.patch('/getUserAvatar', async (request, response) => {
+  const query = {
+    name: request.body.name,
+  };
+  const result = await users.findOne(query);
+  console.log(result,'getuseravatar result');
+  return result
+    ? response.status(200).json({ success: true ,imgPath: result.avatarImgPath })
+    : response
+        .status(404)
+        .json({ success: false, message: 'User not found.' });
+});
 
 
-////////////////////////USERS///////////////////////
+//////////////////////////////////////////////////////
 ////////////////////////REVIEWS///////////////////////
 
 app.get('/getAllReviews', async (request, response) => {
