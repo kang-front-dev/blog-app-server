@@ -91,6 +91,7 @@ app.patch('/getUserInfo', async (request, response) => {
         .json({ success: false, message: 'User not found.' });
 });
 app.patch('/getUserAvatar', async (request, response) => {
+  console.log(request.body);
   const query = {
     name: request.body.name,
   };
@@ -135,21 +136,6 @@ app.post('/insertReview', async (request, response) => {
   }
 });
 
-app.post('/updateViewsReview', async (request, response) => {
-  const query = {
-    _id: new ObjectId(request.body._id),
-  };
-  const targetReview = await reviews.findOne(query);
-  const updateQuery = {
-    $set: {
-      views: targetReview.views + 1,
-    },
-  };
-  const updateResult = await reviews.updateOne(query, updateQuery);
-  if (updateResult) {
-    return response.status(200).json({ success: true });
-  }
-});
 
 app.patch('/editReview', async (request, response) => {
   const query = {
@@ -281,7 +267,7 @@ app.patch('/addView', async (request, response) => {
   const reviewViews = result.views
   const updateQuery = {
     $set:{
-      views: [...reviewViews,request.body.username]
+      views: reviewViews + 1
     }
   }
   const updateResult = await reviews.updateOne(query,updateQuery)
