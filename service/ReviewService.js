@@ -1,4 +1,4 @@
-const { reviews } = require('./dataBase');
+const { reviews } = require('../dataBase');
 const { ObjectId } = require('mongodb');
 
 class ReviewService {

@@ -1,4 +1,4 @@
-const { tags } = require('./dataBase');
+const { tags } = require('../dataBase');
 
 class TagService {
   async updateTags(tagInfo) {

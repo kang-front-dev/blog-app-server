@@ -2,18 +2,26 @@ const express = require('express');
 const app = express();
 const cors = require('cors');
 const dotenv = require('dotenv');
-const bcrypt = require('bcrypt');
+const cookieParser = require('cookie-parser');
 dotenv.config();
 
-app.use(cors());
+app.use(
+  cors({
+    credentials: true,
+    origin: process.env.CLIENT_URL,
+  })
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 ////////////////////////USERS///////////////////////
 
-const UserService = require('./UserService');
-const ReviewService = require('./ReviewService');
-const TagsService = require('./TagsService');
+const UserService = require('./service/UserService');
+const ReviewService = require('./service/ReviewService');
+const TagsService = require('./service/TagsService');
+const TokenService = require('./service/TokenService');
+
+const authMiddleware = require('./middlewares/auth-middleware');
 
 app.get('/getAllUsers', async (request, response) => {
   const serviceResponse = await UserService.getAllUsers();
@@ -25,13 +33,35 @@ app.get('/getAllUsers', async (request, response) => {
 app.post('/regUser', async (request, response) => {
   const serviceResponse = await UserService.regUser(request.body);
 
+  response.cookie('refreshToken', serviceResponse.refreshToken, {
+    maxAge: 15 * 24 * 60 * 60 * 1000,
+    httpOnly: true,
+  });
+
   return serviceResponse.success
     ? response.status(200).json(serviceResponse)
     : response.status(404).json(serviceResponse);
 });
-app.patch('/logUser', async (request, response) => {
+app.post('/logUser', async (request, response) => {
   const serviceResponse = await UserService.logUser(request.body);
 
+  response.cookie('refreshToken', serviceResponse.refreshToken, {
+    maxAge: 15 * 24 * 60 * 60 * 1000,
+    httpOnly: true,
+  });
+
+  if (serviceResponse.success) {
+    return response.status(200).json(serviceResponse);
+  } else if (serviceResponse.message === 'User does not exist') {
+    return response.status(404).json(serviceResponse);
+  } else {
+    response.status(401).json(serviceResponse);
+  }
+});
+app.post('/logout', async (request, response) => {
+  const { refreshToken } = request.cookies;
+  const serviceResponse = await UserService.logout(refreshToken);
+  response.clearCookie('refreshToken');
   return serviceResponse.success
     ? response.status(200).json(serviceResponse)
     : response.status(401).json(serviceResponse);
@@ -143,6 +173,20 @@ app.patch('/updateTags', async (request, response) => {
   return serviceResponse.success
     ? response.status(200).json(serviceResponse)
     : response.status(404).json(serviceResponse);
+});
+
+/////////////////////////TOKENS///////////////////////
+
+app.get('/refresh', authMiddleware, async (request, response) => {
+  console.log(await request.userData);
+  const { id } = await request.userData;
+  const { refreshToken } = await TokenService.findTokenById(id);
+  const serviceResponse = await UserService.refresh(refreshToken);
+  response.cookie('refreshToken', serviceResponse.refreshToken, {
+    maxAge: 15 * 24 * 60 * 60 * 1000,
+    httpOnly: true,
+  });
+  return response.json(serviceResponse);
 });
 
 //////////////////////////////////////////////////////
