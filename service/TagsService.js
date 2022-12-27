@@ -1,6 +1,6 @@
 const { tags } = require('../dataBase');
 
-class TagService {
+class TagsService {
   async updateTags(tagInfo) {
     const query = {
       tagName: tagInfo.tagName,
@@ -35,4 +35,4 @@ class TagService {
   }
 }
 
-module.exports = new TagService()
+module.exports = new TagsService()

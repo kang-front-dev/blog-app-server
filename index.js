@@ -58,13 +58,14 @@ app.post('/logUser', async (request, response) => {
     response.status(401).json(serviceResponse);
   }
 });
-app.post('/logout', async (request, response) => {
-  const { refreshToken } = request.cookies;
+app.delete('/logout', async (request, response) => {
+  const { userData } = await UserService.getUserInfo(request.body);
+  const {refreshToken} = await TokenService.findTokenById(userData._id);
   const serviceResponse = await UserService.logout(refreshToken);
   response.clearCookie('refreshToken');
-  return serviceResponse.success
+  return serviceResponse.deletedCount
     ? response.status(200).json(serviceResponse)
-    : response.status(401).json(serviceResponse);
+    : response.status(404).json(serviceResponse);
 });
 app.patch('/getUserInfo', async (request, response) => {
   const serviceResponse = await UserService.getUserInfo(request.body);
@@ -168,7 +169,7 @@ app.patch('/addView', async (request, response) => {
 ////////////////////////TAGS//////////////////////////
 
 app.patch('/updateTags', async (request, response) => {
-  const serviceResponse = await TagsService(request.body);
+  const serviceResponse = await TagsService.updateTags(request.body);
 
   return serviceResponse.success
     ? response.status(200).json(serviceResponse)
@@ -178,8 +179,11 @@ app.patch('/updateTags', async (request, response) => {
 /////////////////////////TOKENS///////////////////////
 
 app.get('/refresh', authMiddleware, async (request, response) => {
-  console.log(await request.userData);
-  const { id } = await request.userData;
+  const userData = await request.userData;
+  if (!userData) {
+    return response.status(401).json({ success: false });
+  }
+  const { id } = userData;
   const { refreshToken } = await TokenService.findTokenById(id);
   const serviceResponse = await UserService.refresh(refreshToken);
   response.cookie('refreshToken', serviceResponse.refreshToken, {

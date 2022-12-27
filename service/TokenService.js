@@ -44,8 +44,9 @@ class TokenService {
     return tokenData;
   }
   async findTokenById(id) {
-    console.log(id,'findtoken');
-    const tokenData = await sessions.findOne({ user: new ObjectId(id) });
+    const objectId = id instanceof ObjectId ? id : new ObjectId(id)
+    const tokenData = await sessions.findOne({ user: objectId });
+    console.log(tokenData);
     return tokenData;
   }
 
