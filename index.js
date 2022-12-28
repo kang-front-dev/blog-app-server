@@ -168,6 +168,13 @@ app.patch('/addView', async (request, response) => {
 ////////////////////////REVIEWS///////////////////////
 ////////////////////////TAGS//////////////////////////
 
+app.get('/getAllTags', async (request, response) => {
+  const serviceResponse = await TagsService.getAllTags();
+
+  return serviceResponse.success
+    ? response.status(200).json(serviceResponse)
+    : response.status(404).json(serviceResponse);
+});
 app.patch('/updateTags', async (request, response) => {
   const serviceResponse = await TagsService.updateTags(request.body);
 
