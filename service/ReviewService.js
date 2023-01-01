@@ -163,6 +163,30 @@ class ReviewService {
       ? { success: true }
       : { success: false, message: 'Unknown error' };
   }
+
+  async addComment(commentInfo) {
+    const query = {
+      _id: new ObjectId(commentInfo.reviewId),
+    };
+    const result = await reviews.findOne(query);
+    const updateQuery = {
+      $set: {
+        comments: [
+          ...result.comments,
+          {
+            date: commentInfo.date,
+            content: commentInfo.content,
+            author: commentInfo.author,
+          },
+        ],
+      },
+    };
+    const updateResult = await reviews.updateOne(query, updateQuery);
+    console.log(updateResult, 'addComment result');
+    return updateResult
+      ? { success: true }
+      : { success: false, message: 'Unknown error' };
+  }
 }
 
 module.exports = new ReviewService();

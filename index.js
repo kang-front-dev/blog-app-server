@@ -165,6 +165,14 @@ app.patch('/addView', async (request, response) => {
     : response.status(404).json(serviceResponse);
 });
 
+app.post('/addComment', async (request, response) => {
+  const serviceResponse = await ReviewService.addComment(request.body);
+
+  return serviceResponse.success
+    ? response.status(200).json(serviceResponse)
+    : response.status(404).json(serviceResponse);
+});
+
 ////////////////////////REVIEWS///////////////////////
 ////////////////////////TAGS//////////////////////////
 
