@@ -172,6 +172,13 @@ app.post('/addComment', async (request, response) => {
     ? response.status(200).json(serviceResponse)
     : response.status(404).json(serviceResponse);
 });
+app.delete('/removeComment', async (request, response) => {
+  const serviceResponse = await ReviewService.removeComment(request.body);
+
+  return serviceResponse.success
+    ? response.status(200).json(serviceResponse)
+    : response.status(404).json(serviceResponse);
+});
 
 ////////////////////////REVIEWS///////////////////////
 ////////////////////////TAGS//////////////////////////

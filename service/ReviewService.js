@@ -187,6 +187,24 @@ class ReviewService {
       ? { success: true }
       : { success: false, message: 'Unknown error' };
   }
+  async removeComment(commentInfo) {
+    const query = {
+      _id: new ObjectId(commentInfo.reviewId),
+    };
+    const result = await reviews.findOne(query);
+    const comments = result.comments;
+    comments.splice(commentInfo.itemIndex, 1);
+    const updateQuery = {
+      $set: {
+        comments: [...comments],
+      },
+    };
+    const updateResult = await reviews.updateOne(query, updateQuery);
+    console.log(updateResult, 'removeComment result');
+    return updateResult
+      ? { success: true }
+      : { success: false, message: 'Unknown error' };
+  }
 }
 
 module.exports = new ReviewService();
