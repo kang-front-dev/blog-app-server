@@ -31,6 +31,17 @@ class ReviewService {
       : { success: false, message: 'Unknown error' };
   }
 
+  async deleteReview(reviewInfo) {
+    const query = {
+      _id: new ObjectId(reviewInfo._id),
+    };
+    const result = await reviews.deleteOne(query);
+    console.log(result,'deleteReview result');
+    return result
+      ? { success: true }
+      : { success: false, message: 'Unknown error' };
+  }
+
   async editReview(reviewInfo) {
     const query = {
       _id: new ObjectId(reviewInfo._id),

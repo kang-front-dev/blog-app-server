@@ -100,6 +100,13 @@ app.post('/insertReview', async (request, response) => {
     ? response.status(200).json(serviceResponse)
     : response.status(404).json(serviceResponse);
 });
+app.delete('/deleteReview', async (request, response) => {
+  const serviceResponse = await ReviewService.deleteReview(request.body);
+
+  return serviceResponse.success
+    ? response.status(200).json(serviceResponse)
+    : response.status(404).json(serviceResponse);
+});
 
 app.patch('/editReview', async (request, response) => {
   const serviceResponse = await ReviewService.editReview(request.body);
