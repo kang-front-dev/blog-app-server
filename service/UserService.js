@@ -63,7 +63,7 @@ class UserService {
       email: userInfo.email,
     };
     const result = await users.findOne(query);
-    console.log(result,'login user find result ');
+    console.log(result, 'login user find result ');
     if (!result) {
       return { success: false, message: 'User does not exist' };
     }
@@ -92,7 +92,7 @@ class UserService {
 
   async logout(refreshToken) {
     const token = await TokenService.removeToken(refreshToken);
-    return token.deletedCount ? {success: true} : {success: false};
+    return token.deletedCount ? { success: true } : { success: false };
   }
 
   async getUserInfo(userInfo) {
@@ -116,23 +116,25 @@ class UserService {
       : { success: false, message: 'User not found.' };
   }
 
-  async refresh(refreshToken){
-    if(!refreshToken){
-      return {success: false, message: 'Unauthorized error'}
+  async refresh(refreshToken) {
+    if (!refreshToken) {
+      return { success: false, message: 'Unauthorized error' };
     }
-    const userData = await TokenService.validateRefreshToken(refreshToken)
-    const tokenFromDb = await TokenService.findToken(refreshToken)
-    if(!userData || !tokenFromDb){
-      return {success: false, message: 'Unauthorized error'}
+    const userData = await TokenService.validateRefreshToken(refreshToken);
+    if (!userData) {
+      return { success: false, message: 'Unauthorized error' };
     }
 
-    const result = await users.findOne({_id: new ObjectId(userData.id)})
+    const result = await users.findOne({ _id: new ObjectId(userData.id) });
+    if (!result) {
+      return { success: false, message: 'Unauthorized error' };
+    }
     const tokens = TokenService.generateToken({
       id: result._id,
       name: result.name,
       email: result.email,
     });
-    await TokenService.saveToken(result.insertedId, tokens.refreshToken);
+    await TokenService.saveToken(result._id, tokens.refreshToken);
     console.log(result.name, 'Refreshed and logged in!');
     return {
       success: true,
