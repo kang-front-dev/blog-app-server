@@ -85,6 +85,7 @@ class UserService {
         id: result._id,
         name: result.name,
         email: result.email,
+        avatarImgPath: result.avatarImgPath,
       },
       ...tokens,
     };
@@ -104,6 +105,27 @@ class UserService {
     return result
       ? { success: true, userData: result }
       : { success: false, message: 'User not found.' };
+  }
+
+  async updateUserInfo(userInfo){
+    const query = {
+      name: userInfo.name,
+    };
+    const findRes = await users.findOne(query);
+    if(!findRes){
+      return { success: false, message: 'User not found.' }
+    }
+    const updateQuery = {
+      $set:{
+        name: userInfo.name,
+        email: userInfo.email,
+        avatarImgPath: userInfo.avatarImgPath,
+      }
+    }
+    const updateRes = await users.updateOne(query,updateQuery)
+    return updateRes
+    ? { success: true, message: 'Successfully updated!' }
+    : { success: false, message: 'Unknown error.' }
   }
 
   async getUserAvatar(userInfo) {

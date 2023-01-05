@@ -58,9 +58,15 @@ app.post('/logUser', async (request, response) => {
     response.status(401).json(serviceResponse);
   }
 });
-app.delete('/logout', async (request, response) => {
-  const { userData } = await UserService.getUserInfo(request.body);
-  const {refreshToken} = await TokenService.findTokenById(userData._id);
+app.delete('/logout', authMiddleware, async (request, response) => {
+  const userData = await request.userData;
+  console.log(userData, 'userData');
+  if (!userData) {
+    return response
+      .status(401)
+      .json({ success: false, message: 'Unauthorized error.' });
+  }
+  const { refreshToken } = await TokenService.findTokenById(userData.id);
   const serviceResponse = await UserService.logout(refreshToken);
   response.clearCookie('refreshToken');
   return serviceResponse.deletedCount
@@ -69,6 +75,13 @@ app.delete('/logout', async (request, response) => {
 });
 app.patch('/getUserInfo', async (request, response) => {
   const serviceResponse = await UserService.getUserInfo(request.body);
+
+  return serviceResponse.success
+    ? response.status(200).json(serviceResponse)
+    : response.status(404).json(serviceResponse);
+});
+app.patch('/updateUserInfo', async (request, response) => {
+  const serviceResponse = await UserService.updateUserInfo(request.body);
 
   return serviceResponse.success
     ? response.status(200).json(serviceResponse)
@@ -93,14 +106,14 @@ app.get('/getAllReviews', async (request, response) => {
     : response.status(404).json(serviceResponse);
 });
 
-app.post('/insertReview', async (request, response) => {
+app.post('/insertReview', authMiddleware, async (request, response) => {
   const serviceResponse = await ReviewService.insertReview(request.body);
 
   return serviceResponse.success
     ? response.status(200).json(serviceResponse)
     : response.status(404).json(serviceResponse);
 });
-app.delete('/deleteReview', async (request, response) => {
+app.delete('/deleteReview', authMiddleware, async (request, response) => {
   const serviceResponse = await ReviewService.deleteReview(request.body);
 
   return serviceResponse.success
@@ -108,7 +121,7 @@ app.delete('/deleteReview', async (request, response) => {
     : response.status(404).json(serviceResponse);
 });
 
-app.patch('/editReview', async (request, response) => {
+app.patch('/editReview', authMiddleware, async (request, response) => {
   const serviceResponse = await ReviewService.editReview(request.body);
 
   return serviceResponse.success
@@ -132,7 +145,7 @@ app.patch('/getReview', async (request, response) => {
     : response.status(404).json(serviceResponse);
 });
 
-app.patch('/addLike', async (request, response) => {
+app.patch('/addLike', authMiddleware, async (request, response) => {
   const serviceResponse = await ReviewService.addLike(request.body);
 
   return serviceResponse.success
@@ -140,7 +153,7 @@ app.patch('/addLike', async (request, response) => {
     : response.status(404).json(serviceResponse);
 });
 
-app.patch('/removeLike', async (request, response) => {
+app.patch('/removeLike', authMiddleware, async (request, response) => {
   const serviceResponse = await ReviewService.removeLike(request.body);
 
   return serviceResponse.success
@@ -148,7 +161,7 @@ app.patch('/removeLike', async (request, response) => {
     : response.status(404).json(serviceResponse);
 });
 
-app.patch('/addDislike', async (request, response) => {
+app.patch('/addDislike', authMiddleware, async (request, response) => {
   const serviceResponse = await ReviewService.addDislike(request.body);
 
   return serviceResponse.success
@@ -156,7 +169,7 @@ app.patch('/addDislike', async (request, response) => {
     : response.status(404).json(serviceResponse);
 });
 
-app.patch('/removeDislike', async (request, response) => {
+app.patch('/removeDislike', authMiddleware, async (request, response) => {
   const serviceResponse = await ReviewService.removeDislike(request.body);
 
   return serviceResponse.success
@@ -172,14 +185,14 @@ app.patch('/addView', async (request, response) => {
     : response.status(404).json(serviceResponse);
 });
 
-app.post('/addComment', async (request, response) => {
+app.post('/addComment', authMiddleware, async (request, response) => {
   const serviceResponse = await ReviewService.addComment(request.body);
 
   return serviceResponse.success
     ? response.status(200).json(serviceResponse)
     : response.status(404).json(serviceResponse);
 });
-app.delete('/removeComment', async (request, response) => {
+app.delete('/removeComment', authMiddleware, async (request, response) => {
   const serviceResponse = await ReviewService.removeComment(request.body);
 
   return serviceResponse.success
@@ -197,7 +210,7 @@ app.get('/getAllTags', async (request, response) => {
     ? response.status(200).json(serviceResponse)
     : response.status(404).json(serviceResponse);
 });
-app.patch('/updateTags', async (request, response) => {
+app.patch('/updateTags', authMiddleware, async (request, response) => {
   const serviceResponse = await TagsService.updateTags(request.body);
 
   return serviceResponse.success
