@@ -13,7 +13,7 @@ class TagsService {
       tagName: tagInfo.tagName,
     };
     const findResponse = await tags.findOne(query);
-    console.log(findResponse, 'find tag res');
+
     if (findResponse) {
       const updateQuery = {
         $set: {
@@ -22,16 +22,12 @@ class TagsService {
       };
       const updateResponse = await tags.updateOne(query, updateQuery);
 
-      console.log(updateResponse, 'tag update res');
-
       return updateResponse ? { success: true } : { success: false };
     } else {
       const insertResponse = await tags.insertOne({
         ...query,
         useAbility: 1,
       });
-
-      console.log(insertResponse, 'tag insert res');
 
       return insertResponse ? { success: true } : { success: false };
     }

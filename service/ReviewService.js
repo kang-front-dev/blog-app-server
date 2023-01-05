@@ -36,7 +36,7 @@ class ReviewService {
       _id: new ObjectId(reviewInfo._id),
     };
     const result = await reviews.deleteOne(query);
-    console.log(result,'deleteReview result');
+ 
     return result
       ? { success: true }
       : { success: false, message: 'Unknown error' };
@@ -113,7 +113,7 @@ class ReviewService {
       },
     };
     const updateResult = await reviews.updateOne(query, updateQuery);
-    console.log(updateResult, 'addLike result');
+
     return updateResult
       ? { success: true }
       : { success: false, message: 'Unknown error' };
@@ -131,7 +131,7 @@ class ReviewService {
       },
     };
     const updateResult = await reviews.updateOne(query, updateQuery);
-    console.log(updateResult, 'addDislike result');
+
     return updateResult
       ? { success: true }
       : { success: false, message: 'Unknown error' };
@@ -151,7 +151,7 @@ class ReviewService {
       },
     };
     const updateResult = await reviews.updateOne(query, updateQuery);
-    console.log(updateResult, 'addDislike result');
+
     return updateResult
       ? { success: true }
       : { success: false, message: 'Unknown error' };
@@ -169,7 +169,7 @@ class ReviewService {
       },
     };
     const updateResult = await reviews.updateOne(query, updateQuery);
-    console.log(updateResult, 'addView result');
+
     return updateResult
       ? { success: true }
       : { success: false, message: 'Unknown error' };
@@ -193,7 +193,7 @@ class ReviewService {
       },
     };
     const updateResult = await reviews.updateOne(query, updateQuery);
-    console.log(updateResult, 'addComment result');
+
     return updateResult
       ? { success: true }
       : { success: false, message: 'Unknown error' };
@@ -211,7 +211,7 @@ class ReviewService {
       },
     };
     const updateResult = await reviews.updateOne(query, updateQuery);
-    console.log(updateResult, 'removeComment result');
+
     return updateResult
       ? { success: true }
       : { success: false, message: 'Unknown error' };

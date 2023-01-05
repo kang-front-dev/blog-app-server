@@ -63,7 +63,6 @@ class UserService {
       email: userInfo.email,
     };
     const result = await users.findOne(query);
-    console.log(result, 'login user find result ');
     if (!result) {
       return { success: false, message: 'User does not exist' };
     }
@@ -157,7 +156,7 @@ class UserService {
       email: result.email,
     });
     await TokenService.saveToken(result._id, tokens.refreshToken);
-    console.log(result.name, 'Refreshed and logged in!');
+    console.log(result.name, 'Refreshed!');
     return {
       success: true,
       message: 'Welcome back!',

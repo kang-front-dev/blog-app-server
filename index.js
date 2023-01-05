@@ -60,7 +60,7 @@ app.post('/logUser', async (request, response) => {
 });
 app.delete('/logout', authMiddleware, async (request, response) => {
   const userData = await request.userData;
-  console.log(userData, 'userData');
+
   if (!userData) {
     return response
       .status(401)
