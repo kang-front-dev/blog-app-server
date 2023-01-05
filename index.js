@@ -22,6 +22,7 @@ const TagsService = require('./service/TagsService');
 const TokenService = require('./service/TokenService');
 
 const authMiddleware = require('./middlewares/auth-middleware');
+const { getUserInfo } = require('./service/UserService');
 
 app.get('/getAllUsers', async (request, response) => {
   const serviceResponse = await UserService.getAllUsers();
@@ -58,8 +59,8 @@ app.post('/logUser', async (request, response) => {
     response.status(401).json(serviceResponse);
   }
 });
-app.delete('/logout', authMiddleware, async (request, response) => {
-  const userData = await request.userData;
+app.delete('/logout', async (request, response) => {
+  const userData = await getUserInfo(request.body);
 
   if (!userData) {
     return response
@@ -106,14 +107,14 @@ app.get('/getAllReviews', async (request, response) => {
     : response.status(404).json(serviceResponse);
 });
 
-app.post('/insertReview', authMiddleware, async (request, response) => {
+app.post('/insertReview', async (request, response) => {
   const serviceResponse = await ReviewService.insertReview(request.body);
 
   return serviceResponse.success
     ? response.status(200).json(serviceResponse)
     : response.status(404).json(serviceResponse);
 });
-app.delete('/deleteReview', authMiddleware, async (request, response) => {
+app.delete('/deleteReview', async (request, response) => {
   const serviceResponse = await ReviewService.deleteReview(request.body);
 
   return serviceResponse.success
@@ -121,7 +122,7 @@ app.delete('/deleteReview', authMiddleware, async (request, response) => {
     : response.status(404).json(serviceResponse);
 });
 
-app.patch('/editReview', authMiddleware, async (request, response) => {
+app.patch('/editReview', async (request, response) => {
   const serviceResponse = await ReviewService.editReview(request.body);
 
   return serviceResponse.success
@@ -145,7 +146,7 @@ app.patch('/getReview', async (request, response) => {
     : response.status(404).json(serviceResponse);
 });
 
-app.patch('/addLike', authMiddleware, async (request, response) => {
+app.patch('/addLike', async (request, response) => {
   const serviceResponse = await ReviewService.addLike(request.body);
 
   return serviceResponse.success
@@ -153,7 +154,7 @@ app.patch('/addLike', authMiddleware, async (request, response) => {
     : response.status(404).json(serviceResponse);
 });
 
-app.patch('/removeLike', authMiddleware, async (request, response) => {
+app.patch('/removeLike', async (request, response) => {
   const serviceResponse = await ReviewService.removeLike(request.body);
 
   return serviceResponse.success
@@ -161,7 +162,7 @@ app.patch('/removeLike', authMiddleware, async (request, response) => {
     : response.status(404).json(serviceResponse);
 });
 
-app.patch('/addDislike', authMiddleware, async (request, response) => {
+app.patch('/addDislike', async (request, response) => {
   const serviceResponse = await ReviewService.addDislike(request.body);
 
   return serviceResponse.success
@@ -169,7 +170,7 @@ app.patch('/addDislike', authMiddleware, async (request, response) => {
     : response.status(404).json(serviceResponse);
 });
 
-app.patch('/removeDislike', authMiddleware, async (request, response) => {
+app.patch('/removeDislike', async (request, response) => {
   const serviceResponse = await ReviewService.removeDislike(request.body);
 
   return serviceResponse.success
@@ -185,14 +186,14 @@ app.patch('/addView', async (request, response) => {
     : response.status(404).json(serviceResponse);
 });
 
-app.post('/addComment', authMiddleware, async (request, response) => {
+app.post('/addComment', async (request, response) => {
   const serviceResponse = await ReviewService.addComment(request.body);
 
   return serviceResponse.success
     ? response.status(200).json(serviceResponse)
     : response.status(404).json(serviceResponse);
 });
-app.delete('/removeComment', authMiddleware, async (request, response) => {
+app.delete('/removeComment', async (request, response) => {
   const serviceResponse = await ReviewService.removeComment(request.body);
 
   return serviceResponse.success
@@ -210,7 +211,7 @@ app.get('/getAllTags', async (request, response) => {
     ? response.status(200).json(serviceResponse)
     : response.status(404).json(serviceResponse);
 });
-app.patch('/updateTags', authMiddleware, async (request, response) => {
+app.patch('/updateTags', async (request, response) => {
   const serviceResponse = await TagsService.updateTags(request.body);
 
   return serviceResponse.success
