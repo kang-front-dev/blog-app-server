@@ -54,7 +54,7 @@ app.post('/logUser', async (request, response) => {
     response.status(401).json(serviceResponse);
   }
 });
-app.patch('/logout', authMiddleware, async (request, response) => {
+app.patch('/logOut', authMiddleware, async (request, response) => {
   const userData = await request.userData;
 
   if (!userData) {
@@ -62,12 +62,18 @@ app.patch('/logout', authMiddleware, async (request, response) => {
       .status(401)
       .json({ success: false, message: 'Unauthorized error.' });
   }
-  const { refreshToken } = await TokenService.findTokenById(userData.id);
-  const serviceResponse = await UserService.logout(refreshToken);
+  const findTokenRes = await TokenService.findTokenById(userData.id);
+  if(!findTokenRes){
+    return response
+      .status(401)
+      .json({ success: false, message: 'Unauthorized error.' });
+  }
+  
+  const serviceResponse = await UserService.logout(findTokenRes.refreshToken);
   // response.clearCookie('refreshToken');
-  return serviceResponse.deletedCount
+  return serviceResponse.success
     ? response.status(200).json(serviceResponse)
-    : response.status(404).json(serviceResponse);
+    : response.status(401).json(serviceResponse);
 });
 app.patch('/getUserInfo', async (request, response) => {
   const serviceResponse = await UserService.getUserInfo(request.body);
