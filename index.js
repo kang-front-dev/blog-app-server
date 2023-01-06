@@ -57,7 +57,7 @@ app.post('/logUser', async (request, response) => {
     response.status(401).json(serviceResponse);
   }
 });
-app.patch('/logout',authMiddleware, async (request, response) => {
+app.delete('/logout',authMiddleware, async (request, response) => {
   const userData = await request.userData;
 
   if (!userData) {
