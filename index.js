@@ -4,14 +4,8 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 
 dotenv.config();
-const corsConfig = {
-  credentials: true,
-  origin: 'https://frontview-kang.netlify.app',
-  optionSuccessStatus: 200,
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  methods: ['POST', 'PATCH', 'GET', 'DELETE', 'PUT'],
-};
-app.use(cors(corsConfig));
+
+app.use(cors());
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -35,10 +29,10 @@ app.get('/getAllUsers', async (request, response) => {
 app.post('/regUser', async (request, response) => {
   const serviceResponse = await UserService.regUser(request.body);
 
-  response.cookie('refreshToken', serviceResponse.refreshToken, {
-    maxAge: 15 * 24 * 60 * 60 * 1000,
-    httpOnly: true,
-  });
+  // response.cookie('refreshToken', serviceResponse.refreshToken, {
+  //   maxAge: 15 * 24 * 60 * 60 * 1000,
+  //   httpOnly: true,
+  // });
 
   return serviceResponse.success
     ? response.status(200).json(serviceResponse)
@@ -47,10 +41,10 @@ app.post('/regUser', async (request, response) => {
 app.post('/logUser', async (request, response) => {
   const serviceResponse = await UserService.logUser(request.body);
 
-  response.cookie('refreshToken', serviceResponse.refreshToken, {
-    maxAge: 15 * 24 * 60 * 60 * 1000,
-    httpOnly: true,
-  });
+  // response.cookie('refreshToken', serviceResponse.refreshToken, {
+  //   maxAge: 15 * 24 * 60 * 60 * 1000,
+  //   httpOnly: true,
+  // });
 
   if (serviceResponse.success) {
     return response.status(200).json(serviceResponse);
@@ -70,7 +64,7 @@ app.delete('/logout', authMiddleware, async (request, response) => {
   }
   const { refreshToken } = await TokenService.findTokenById(userData.id);
   const serviceResponse = await UserService.logout(refreshToken);
-  response.clearCookie('refreshToken');
+  // response.clearCookie('refreshToken');
   return serviceResponse.deletedCount
     ? response.status(200).json(serviceResponse)
     : response.status(404).json(serviceResponse);
@@ -222,7 +216,7 @@ app.patch('/updateTags', async (request, response) => {
 
 /////////////////////////TOKENS///////////////////////
 
-app.get('/refresh',cors(corsConfig), authMiddleware, async (request, response) => {
+app.get('/refresh', authMiddleware, async (request, response) => {
   const userData = await request.userData;
   if (!userData) {
     return response.status(401).json({ success: false });
@@ -230,10 +224,10 @@ app.get('/refresh',cors(corsConfig), authMiddleware, async (request, response) =
   const { id } = userData;
   const { refreshToken } = await TokenService.findTokenById(id);
   const serviceResponse = await UserService.refresh(refreshToken);
-  response.cookie('refreshToken', serviceResponse.refreshToken, {
-    maxAge: 15 * 24 * 60 * 60 * 1000,
-    httpOnly: true,
-  });
+  // response.cookie('refreshToken', serviceResponse.refreshToken, {
+  //   maxAge: 15 * 24 * 60 * 60 * 1000,
+  //   httpOnly: true,
+  // });
   return response.json(serviceResponse);
 });
 
