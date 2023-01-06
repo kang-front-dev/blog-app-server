@@ -56,8 +56,8 @@ app.post('/logUser', async (request, response) => {
     response.status(401).json(serviceResponse);
   }
 });
-app.delete('/logout', async (request, response) => {
-  const userData = await getUserInfo(request.body);
+app.delete('/logout',authMiddleware, async (request, response) => {
+  const userData = await request.userData;
 
   if (!userData) {
     return response
