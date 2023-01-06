@@ -5,7 +5,9 @@ const dotenv = require('dotenv');
 
 dotenv.config();
 
-app.use(cors());
+app.use(cors({
+  credentials: true,
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
@@ -54,7 +56,7 @@ app.post('/logUser', async (request, response) => {
     response.status(401).json(serviceResponse);
   }
 });
-app.patch('/logout', async (request, response) => {
+app.delete('/logout', async (request, response) => {
   const userData = await getUserInfo(request.body);
 
   if (!userData) {
