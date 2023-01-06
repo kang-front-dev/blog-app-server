@@ -4,16 +4,14 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 
 dotenv.config();
-
-app.use(
-  cors({
-    credentials: true,
-    origin: 'https://frontview-kang.netlify.app',
-    optionSuccessStatus: 200,
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    methods: ['POST','PATCH','GET','DELETE','PUT']
-  })
-);
+const corsConfig = {
+  credentials: true,
+  origin: 'https://frontview-kang.netlify.app',
+  optionSuccessStatus: 200,
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  methods: ['POST', 'PATCH', 'GET', 'DELETE', 'PUT'],
+};
+app.use(cors(corsConfig));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -26,7 +24,6 @@ const TagsService = require('./service/TagsService');
 const TokenService = require('./service/TokenService');
 
 const authMiddleware = require('./middlewares/auth-middleware');
-const { getUserInfo } = require('./service/UserService');
 
 app.get('/getAllUsers', async (request, response) => {
   const serviceResponse = await UserService.getAllUsers();
@@ -225,7 +222,7 @@ app.patch('/updateTags', async (request, response) => {
 
 /////////////////////////TOKENS///////////////////////
 
-app.get('/refresh', authMiddleware, async (request, response) => {
+app.get('/refresh',cors(corsConfig), authMiddleware, async (request, response) => {
   const userData = await request.userData;
   if (!userData) {
     return response.status(401).json({ success: false });
