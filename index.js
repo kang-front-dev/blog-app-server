@@ -10,6 +10,8 @@ app.use(
     credentials: true,
     origin: 'https://frontview-kang.netlify.app',
     optionSuccessStatus: 200,
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    methods: ['POST','PATCH','GET','DELETE','PUT']
   })
 );
 
