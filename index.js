@@ -5,10 +5,7 @@ const dotenv = require('dotenv');
 
 dotenv.config();
 
-app.use(cors({
-  allowedHeaders: ['Content-type','Authorization'],
-  methods: ['GET','POST','PATCH','DELETE','PUT'],
-}));
+app.use(cors());
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -225,8 +222,11 @@ app.get('/refresh', authMiddleware, async (request, response) => {
     return response.status(401).json({ success: false });
   }
   const { id } = userData;
-  const { refreshToken } = await TokenService.findTokenById(id);
-  const serviceResponse = await UserService.refresh(refreshToken);
+  const findTokenRes = await TokenService.findTokenById(userData.id);
+  if(!findTokenRes){
+    return {success: false,message: 'Session not found'}
+  }
+  const serviceResponse = await UserService.refresh(findTokenRes.refreshToken);
   // response.cookie('refreshToken', serviceResponse.refreshToken, {
   //   maxAge: 15 * 24 * 60 * 60 * 1000,
   //   httpOnly: true,
