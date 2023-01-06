@@ -62,7 +62,7 @@ app.delete('/logout', async (request, response) => {
       .status(401)
       .json({ success: false, message: 'Unauthorized error.' });
   }
-  const { refreshToken } = await TokenService.findTokenById(userData.id);
+  const { refreshToken } = await TokenService.findTokenById(userData._id);
   const serviceResponse = await UserService.logout(refreshToken);
   response.clearCookie('refreshToken');
   return serviceResponse.deletedCount
