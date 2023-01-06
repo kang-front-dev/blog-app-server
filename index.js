@@ -5,15 +5,7 @@ const dotenv = require('dotenv');
 
 dotenv.config();
 
-app.use(
-  cors((x) =>
-    x
-      .AllowAnyMethod()
-      .AllowAnyHeader()
-      .SetIsOriginAllowed((origin) => true) // allow any origin
-      .AllowCredentials()
-  )
-);
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
