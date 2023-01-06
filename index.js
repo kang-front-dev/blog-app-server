@@ -5,11 +5,13 @@ const dotenv = require('dotenv');
 
 dotenv.config();
 
-// app.use(cors({
-//   credentials: true,
-//   origin: '*',
-//   optionSuccessStatus:200,
-// }));
+app.use(
+  cors({
+    credentials: true,
+    origin: process.env.CLIENT_URL,
+    optionSuccessStatus: 200,
+  })
+);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -59,7 +61,7 @@ app.post('/logUser', async (request, response) => {
     response.status(401).json(serviceResponse);
   }
 });
-app.delete('/logout',authMiddleware, async (request, response) => {
+app.delete('/logout', authMiddleware, async (request, response) => {
   const userData = await request.userData;
 
   if (!userData) {
