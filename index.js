@@ -6,6 +6,7 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 app.use(cors({
+  credentials: true,
   origin: process.env.CLIENT_URL,
 }));
 app.use(express.json());
@@ -56,7 +57,7 @@ app.post('/logUser', async (request, response) => {
     response.status(401).json(serviceResponse);
   }
 });
-app.delete('/logout',authMiddleware, async (request, response) => {
+app.patch('/logout',authMiddleware, async (request, response) => {
   const userData = await request.userData;
 
   if (!userData) {
@@ -64,7 +65,7 @@ app.delete('/logout',authMiddleware, async (request, response) => {
       .status(401)
       .json({ success: false, message: 'Unauthorized error.' });
   }
-  const { refreshToken } = await TokenService.findTokenById(userData._id);
+  const { refreshToken } = await TokenService.findTokenById(userData.id);
   const serviceResponse = await UserService.logout(refreshToken);
   response.clearCookie('refreshToken');
   return serviceResponse.deletedCount
